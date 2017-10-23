@@ -1,0 +1,34 @@
+{
+	"sidebar": [
+		{
+			"page": "index",
+			"title": "Мои закупки",
+			"link": "/index.html",
+			"icon": "ti-shopping-cart-full"
+		},
+		{
+			"page": "org",
+			"title": "Контакты организаторов",
+			"link": "org.html",
+			"icon": "ti-map"
+		},
+		{
+			"page": "point",
+			"title": "Пункты выдачи",
+			"link": "point.html",
+			"icon": "ti-location-pin"
+		},
+		{
+			"page": "unsubs",
+			"title": "Отписаться от уведомлений",
+			"link": "/unsubs.html",
+			"icon": "ti-email"
+		},
+		{
+			"page": "terms",
+			"title": "Пользовательское соглашение",
+			"link": "/terms.html",
+			"icon": "ti-receipt"
+		}
+	]
+}

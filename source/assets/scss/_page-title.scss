@@ -1,0 +1,46 @@
+// Page Title
+.main-content-title {
+    border-bottom: 1px solid #eee;
+    padding: 32px 0;
+    position: relative;
+    margin-left: -15px;
+    margin-right: -15px;
+
+    @media (max-width: $screen-xs-max) {
+        text-align: center;
+        padding: 20px 0;
+    }
+
+    .row {
+        margin: 0 15px;
+    }
+
+    h1, .page-title {
+        color: #333;
+        font-size: 28px;
+        font-weight: 300;
+        letter-spacing: 1px;
+        line-height: 1;
+        margin: 0;
+        padding: 0;
+        text-transform: uppercase;
+
+        @media (max-width: $screen-xs-max) {
+            font-size: 24px;
+        }
+    }
+
+    .page-description {
+        color: #777;
+        display: block;
+        font-size: 18px;
+        font-weight: 300;
+        margin-top: 10px;
+
+        small {
+            font-size: 60%;
+            margin-top: 10px;
+            display: block;
+        }
+    }
+}

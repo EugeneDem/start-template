@@ -1,0 +1,12 @@
+include ../scripts/scripts
+
+doctype html
+html(lang='ru')
+	block analitics
+		-var connonicalPage = '';
+	include ../head/head
+	body
+		block content
+		+scripts(['vendor/jquery-3.2.1.min.js', 'vendor/tether.min.js', 'vendor/bootstrap.min.js', 'vendor/jquery.nicescroll.min.js'])
+		block scripts
+		script(src="assets/js/main.js")

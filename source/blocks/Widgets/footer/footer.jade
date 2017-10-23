@@ -1,0 +1,30 @@
+footer.app-footer
+	.app-footer__nav
+		.container
+			.grid
+				.grid__col-1.grid__sd-col-2.grid__t-col-12
+					a.footer-homepage-link(href="/russia/main/rus/home.htm", title="Citibank.ru") Citibank.ru
+				.grid__col-11.grid__sd-col-10.grid__t-col-12
+					ul
+						-var listNav = [{"link": "/russia/main/rus/privacy.htm", "title": "Конфиденциальность"}, {"link": "/russia/info/rus/security.htm", "title": "Ваша безопасность"}, {"link": "/russia/citigroup/rus/career.htm", "title": "Карьера"}, {"link": "/russia/citigroup/rus/about.htm", "title": "О Ситибанке"}, {"link": "/russia/info/rus/contacts.htm", "title": "Контакты"}, {"link": "/russia/info/rus/contacts_form.htm", "title": "Напишите нам"}, {"link": "/russia/info/rus/sitemap.htm", "title": "Карта Сайта"}];
+						each value in listNav
+							li
+								a(href=value.link, title=value.title)!= value.title
+		.container
+			.grid.seo-disclaimer-wrapper
+				.grid__col-12
+					.seo-disclaimer
+						p АО КБ «Ситибанк» - один из первых международных банков, вышедших на российский рынок, и один из самых крупных в стране по уровню капитала и размеру активов.
+						p Банк предлагает широкий перечень финансовых продуктов и услуг для физических и юридических лиц: банковское обслуживание, вклады, инвестиционные продукты, страхование, <a href="/russia/loan/rus/loan.htm" title="потребительский кредит">потребительский кредит</a> и <a href="/russia/cards/rus/main.htm" title="кредитные карты">кредитные карты</a>. В 2013 и 2014 годах Citi был признан <a href="/russia/citigroup/rus/about.htm" title="самым надежным банком в России">самым надежным банком в России</a> по версии Forbes.
+			.grid.copyrights
+				.grid__col-10.grid__l-col-12.grid__col-push-2.grid__l-col-push-0
+					.copyrights__list
+						p
+							a(href="/russia/main/rus/promise.htm", title="Соблюдение неприкосновенности частной жизни") Соблюдение неприкосновенности частной жизни
+							| ,
+						p
+							a(href="/russia/main/rus/disclamer.htm", title="Условия, предостережения и оговорки") Условия, предостережения и оговорки
+						p.copyright-text Копирайт © 2002-2017 Citigroup Inc.
+				.grid__col-2.grid__l-col-12.grid__col-pull-10.grid__l-col-pull-0
+					.app-footer__logo
+						img(src='f/i/citilogo-blue.png', alt='Citi Invest')

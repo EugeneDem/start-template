@@ -1,0 +1,13 @@
+block page
+	-var page = "login";
+
+extends ../blocks/layout/layout
+
+block content
+	.full-page
+		.full-page__wrap
+			.container
+				.col-12.error-box
+					.col-12.col-sm-10.offset-sm-1.col-md-8.offset-md-2.col-lg-6.offset-lg-3.error-box__details
+						h3 Oops! You are stuck at 404
+						p Unfortunately the page you were looking for could not be found.<br />It may be temporarily unavailable, moved or no longer exist.<br />Check the URL you entered for any mistakes and try again.<br /><a href="index.html" class="btn btn-danger btn-return">Return home</a>
