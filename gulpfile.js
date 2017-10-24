@@ -29,6 +29,7 @@ var gulp = require('gulp'),
     print = require('gulp-print'),
     runSequence = require('run-sequence'),
     imagemin = require('gulp-imagemin'),
+    pngquant = require('imagemin-pngquant'),
     spritesmith = require('gulp.spritesmith'),
     mergeStream = require('merge-stream'),
     vinylBuffer = require('vinyl-buffer'),
@@ -38,6 +39,7 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     gutil = require('gulp-util'),
     debug = require('gulp-debug'),
+    connectHistoryApiFallback = require('connect-history-api-fallback'),
     reload = browserSync.reload;
 
 const $ = require('gulp-load-plugins')({
@@ -50,7 +52,7 @@ const onError = (err) => {
 };
 
 // configuration
-var paths = {
+const paths = {
   source: 'source',
   css: 'source/assets/css',
   scss: 'source/assets/scss',
@@ -62,18 +64,18 @@ var paths = {
   content: 'source/content'
 };
 
-watch = {
+const watch = {
   jade: paths.source + '/**/*.jade',
   css: paths.css + '/**/*.css',
   scss: paths.scss + '/**/*.scss',
   js: paths.js + '/**/*.js',
-  img: [paths.img + '/**/*.{png,jpg,jpeg,gif,svg}', '!' + paths.img + '/sprites'],
+  img: [paths.img + '/**/*.*', '!' + paths.img + '/sprites/**/*.*'],
   content: [paths.content + '/**/*.*', paths.content + '/**/.*'],
-  svgSprite: paths.spritesSvg.src + '/*.svg',
-  pngSprite: [paths.spritesPng.src + '/*.png', path.scss + '/_sprites.hbs']
+  svgSprite: paths.spritesSvg + '/*.svg',
+  pngSprite: [paths.spritesPng + '/*.png', path.scss + '/_sprites.hbs']
 };
 
-dest = {
+const dest = {
   source: 'html',
   css: 'html/assets/css',
   scss: 'html/assets/css',
@@ -83,21 +85,38 @@ dest = {
   content: 'html/content'
 };
 
-devBuild = true;
+const devBuild = true;
+const spa = false;
 
 // browser sync
 
 gulp.task('browser-sync', () => {
-  browserSync.init({
-    server: {
-      baseDir: dest.source
-    },
-    // https: true,
-    // online: true,
-    online: false,
-    open: false
-    // open: 'external'
-  });
+  let middleware = [];
+
+  if (spa) {
+    middleware.push(connectHistoryApiFallback());
+  }
+
+  browserSync
+    .create()
+    .init({
+      notify: false,
+      open: false,
+      // open: 'external'
+      online: false,
+      // https: true,
+      // online: true,
+      files: [
+        dest.source + '/**/*',
+      ],
+      server: {
+        baseDir: dest.source,
+        middleware,
+        serveStaticOptions: {
+          extensions: []
+        }
+      }
+    });
 });
 
 // Sprite img
@@ -127,14 +146,13 @@ gulp.task('pngSprite', function generateSpritesheets () {
 // Sprite svg
 
 gulp.task('svgSprite', function () {
-  return gulp.src(paths.spritesSvg.src + '/*.svg')
+  return gulp.src(paths.spritesSvg + '/*.svg')
     .pipe($.plumber({ errorHandler: onError }))
     .pipe($.svgmin({
       js2svg: { pretty: true },
       plugins: [{ cleanupIDs: false }]
     }))
     .pipe($.svgstore())
-
     .pipe(gulpif(!devBuild, $.replace('?><!', '?>\n<!')))
     .pipe(gulpif(!devBuild, $.replace('><svg', '>\n<svg')))
     .pipe(gulpif(!devBuild, $.replace('><symbol', '>\n<symbol')))
@@ -238,20 +256,21 @@ gulp.task('jade:linter', () => {
 // images
 
 gulp.task('img', () => {
-  return gulp.src([paths.img + '/**/*.{png,jpg,jpeg,gif,svg}', '!' + paths.img + '/sprites'])
+  return gulp.src([paths.img + '/**/*.*', '!' + paths.img + '/sprites/**/*.*'])
+    .pipe(changed(dest.img))
+    .pipe($.newer(dest.img))
     .pipe(gulpif(!devBuild, imagemin({
         progressive: true,
         interlaced: true,
         optimizationLevel: 3,
         svgoPlugins: [
-          {removeViewBox: false}
-          // {removeUselessStrokeAndFill: false},
-          // {cleanupIDs: false}
+          {removeViewBox: false},
+          {removeUselessStrokeAndFill: false},
+          {cleanupIDs: false}
         ],
         verbose: true,
-        use: []
+        use: [pngquant()]
     })))
-    .pipe(changed(dest.img))
     .pipe(gulp.dest(dest.img));
 });
 
@@ -291,6 +310,7 @@ gulp.task('userjs', () => {
 
 // content
 gulp.task('contents', () => {
+  $.fancyLog("-> Copy content ...");
   return gulp.src([paths.content + '/**/*.*', paths.content + '/**/.*'])
     .pipe(changed(dest.content))
     .pipe(gulp.dest(dest.content))
@@ -300,13 +320,14 @@ gulp.task('contents', () => {
 // favicons-generate
 gulp.task("favicons-generate", () => {
   $.fancyLog("-> Generating favicons");
-  return gulp.src(path.img + "/favicon.png").pipe($.favicons({
-      appName: "sp-service",
+  return gulp.src(paths.img + "/favicon.png")
+    .pipe($.favicons({
+      appName: "start-template",
       appDescription: "start-template",
       developerName: "",
       developerURL: "",
       background: "#FFFFFF",
-      path: pkg.paths.favicon.path,
+      path: paths.img,
       url: "",
       display: "standalone",
       orientation: "portrait",
@@ -314,39 +335,43 @@ gulp.task("favicons-generate", () => {
       logging: false,
       online: false,
       html: dest.source + "/favicons.html",
+      pipeHTML: true,
       replace: true,
       icons: {
           android: false, // Create Android homescreen icon. `boolean`
-          appleIcon: true, // Create Apple touch icons. `boolean`
+          appleIcon: false, // Create Apple touch icons. `boolean`
           appleStartup: false, // Create Apple startup images. `boolean`
-          coast: true, // Create Opera Coast icon. `boolean`
+          coast: false, // Create Opera Coast icon. `boolean`
           favicons: true, // Create regular favicons. `boolean`
-          firefox: true, // Create Firefox OS icons. `boolean`
+          firefox: false, // Create Firefox OS icons. `boolean`
           opengraph: false, // Create Facebook OpenGraph image. `boolean`
           twitter: false, // Create Twitter Summary Card image. `boolean`
-          windows: true, // Create Windows 8 tile icons. `boolean`
-          yandex: true // Create Yandex browser icon. `boolean`
+          windows: false, // Create Windows 8 tile icons. `boolean`
+          yandex: false // Create Yandex browser icon. `boolean`
       }
-  })).pipe(gulp.dest(dest.img));
+    }))
+    .pipe(gulp.dest(dest.img));
 });
 
 // copy favicons
 gulp.task("favicons", ["favicons-generate"], () => {
   $.fancyLog("-> Copying favicon.ico");
-  return gulp.src(path.img + "/favicon.*")
+  return gulp.src(dest.img + "/favicon.*")
       .pipe($.size({gzip: true, showFiles: true}))
       .pipe(gulp.dest(dest.source));
 });
 
 // fonts
 gulp.task('fonts', () => {
+  $.fancyLog("-> Copy fonts");
   return gulp.src(paths.fonts)
-  .pipe(gulp.dest(dest.fonts));
+    .pipe(gulp.dest(dest.fonts));
 });
 
 // clean
 
 gulp.task('clean', () => {
+  $.fancyLog("-> Clean html");
   return del([
     dest.source
   ]);
@@ -375,8 +400,8 @@ gulp.task('watch', ['setWatch', 'browser-sync'], () => {
 
 gulp.task('build', ['clean'], () => {
   $.runSequence(
-    'pngSprite', 'svgSprite',
-    ['css', 'scss', 'jade', 'jade:linter', 'img', 'contents', 'fonts', 'vendorjs', 'userjs'],
+    'img', 'pngSprite', 'svgSprite', /*'favicons',*/
+    ['css', 'scss', 'jade', 'jade:linter', 'contents', 'fonts', 'vendorjs', 'userjs'],
     'watch', () => {}
   );
 });
@@ -390,7 +415,7 @@ gulp.task('default', ['build']);
 gulp.task('deploy', ['clean'], () => {
   devBuild = false;
   $.runSequence(
-    'pngSprite', 'svgSprite',
-    ['css', 'scss', 'jade', 'img', 'contents', 'fonts', 'vendorjs', 'userjs']
+    'img', 'pngSprite', 'svgSprite', /*'favicons',*/
+    ['css', 'scss', 'jade', 'contents', 'fonts', 'vendorjs', 'userjs']
   );
 });

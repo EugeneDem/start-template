@@ -1,23 +1,21 @@
 .sprite-sprite {
   display: inline-block;
+  vertical-align: middle;
   width: 166px;
   height: 148px;
-  background: url("../images/sprites.png") 0px 0px/166px 148px no-repeat;
-  vertical-align: middle;
-}
+  background: url("../images/sprites.png") 0px 0px/166px 148px no-repeat; }
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .sprite-sprite {
+      background-image: url("../images/sprites_2x.png"); } }
 
-*,*::before,*::after {
-  box-sizing: inherit;
-}
+*,
+*::before,
+*::after {
+  box-sizing: inherit; }
 
 html {
-  box-sizing: border-box;
-}
+  box-sizing: border-box; }
 
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .sprite-sprite {
-    background-image: url("../images/sprites_2x.png");
-  }
-}
 
-/*# sourceMappingURL=main.css.map */
+
+//# sourceMappingURL=main.css.map
