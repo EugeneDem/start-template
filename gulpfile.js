@@ -196,7 +196,7 @@ gulp.task('css', ['scss'], () => {
     .pipe($.plumber({errorHandler: onError}))
     .pipe($.newer({dest: dest.css + 'main.css'}))
     .pipe($.print())
-    .pipe($.sourcemaps.init({loadMaps: true}))
+    .pipe(gulpif(devBuild, $.sourcemaps.init({loadMaps: true})))
     // .pipe($.cssnano({
     //   discardComments: {
     //       removeAll: true
@@ -206,7 +206,7 @@ gulp.task('css', ['scss'], () => {
     //   minifyFontValues: true,
     //   minifySelectors: true
     // }))
-    .pipe($.sourcemaps.write("./"))
+    .pipe(gulpif(devBuild, $.sourcemaps.write('./')))
     .pipe(gulp.dest(dest.css))
     .pipe($.filter("**/*.css"))
     .pipe(reload({stream: true}));
