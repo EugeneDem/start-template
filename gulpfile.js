@@ -3,7 +3,9 @@
 var gulp = require('gulp'),
     del = require('del'),
     data = require('gulp-data'),
+    mergeJson = require('gulp-merge-json'),
     path = require('path'),
+    fs = require('fs'),
     sass = require('gulp-sass'),
     sassGlob = require('gulp-sass-glob'),
     autoprefixer = require('autoprefixer'),
@@ -58,9 +60,10 @@ const paths = {
   scss: 'source/assets/scss',
   js: 'source/assets/js',
   img: 'source/assets/images',
+  imgBase64: 'source/assets/images/base64',
   spritesPng: 'source/assets/images/sprites/png',
   spritesSvg: 'source/assets/images/sprites/svg',
-  fonts: 'source/assets/fonts/**/*',
+  fonts: ['source/assets/fonts/**/*', './node_modules/slick-carousel/slick/fonts/*'],
   content: 'source/content'
 };
 
@@ -178,7 +181,7 @@ gulp.task('scss', () => {
     .pipe(sass().on("error", sass.logError))
     // .pipe(sass.sync().on('error', sass.logError))
     .pipe(base64({
-      baseDir: paths.img,
+      baseDir: paths.imgBase64,
       extensions: [/#datauri/i]
     }))
     .pipe($.cached("sass_compile"))
@@ -222,7 +225,26 @@ gulp.task('html', () => {
 
 // jade
 
-gulp.task('jade', () => {
+gulp.task('jade:data', () => {
+  return gulp.src([
+      './source/pages/**/*.json',
+      './source/blocks/Widgets/**/*.json'
+    ])
+    .pipe($.mergeJson({
+      fileName: 'data.json',
+      edit: (json, file) => {
+        let filename = path.basename(file.path),
+            primaryKey = filename.replace(path.extname(filename), '');
+        let data = {};
+            data[primaryKey.toUpperCase()] = json;
+
+        return data;
+      },
+    }))
+    .pipe(gulp.dest('./temp'));
+});
+
+gulp.task('jade', ['jade:data'], () => {
   return gulp.src(paths.source+'/**/*.jade')
     .pipe($.plumber({ errorHandler: onError }))
     .pipe(changed(dest.source, {extension: '.html'}))
@@ -234,13 +256,14 @@ gulp.task('jade', () => {
     .pipe(debug({title: 'debug-after-filter'}))
     .pipe(data((file) => {
       try {
-        return require('./source/pages/' + path.basename(file.path, '.jade') + '.json');
+        return JSON.parse(fs.readFileSync('./temp/data.json'))
       } catch (err) {
         return;
       }
     }))
     .pipe(jade({
-      pretty: true
+      pretty: true,
+      basedir: './'
     }))
     .pipe(rename({dirname: '.'}))
     .pipe(gulp.dest(dest.source))
@@ -256,7 +279,7 @@ gulp.task('jade:linter', () => {
 // images
 
 gulp.task('img', () => {
-  return gulp.src([paths.img + '/**/*.*', '!' + paths.img + '/sprites/**/*.*'])
+  return gulp.src([paths.img + '/**/*.*', '!' + paths.img + '/sprites/**/*.*', '!' + paths.imgBase64 + '/**/*.*'])
     .pipe(changed(dest.img))
     .pipe($.newer(dest.img))
     .pipe(gulpif(!devBuild, imagemin({
@@ -277,7 +300,12 @@ gulp.task('img', () => {
 // vendor-js
 
 gulp.task('vendorjs', () => {
-  return gulp.src(paths.js+"/vendor/*.js")
+  return gulp.src([
+      paths.js+"/vendor/*.js",
+      './node_modules/jquery/dist/jquery.js',
+      './node_modules/slick-carousel/slick/slick.js',
+      './node_modules/svg4everybody/dist/svg4everybody.js'
+    ])
     .pipe(gulp.dest(dest.js+"/vendor/"))
     .pipe(reload({stream: true}));
 });
