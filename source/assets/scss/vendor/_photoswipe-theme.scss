@@ -1,0 +1,55 @@
+.pswp {
+    &__button,
+    &__button--arrow--left:before,
+    &__button--arrow--right:before {
+        background-image: url("../images/default-skin.png");
+    }
+    &__bg {
+        background: #fff;
+    }
+
+    &__top-bar {
+        top: 25px;
+
+        @media (max-width: $screen-xs-min) {
+            margin-top: 10px;
+        }
+    }
+
+    &__top-bar,
+    &__caption {
+        background: none;
+    }
+
+    &__button--close {
+        background: url("close-modal-dark.svg#datauri") no-repeat 0 0;
+        background-size: cover;
+        width: 24px;
+        height: 24px;
+        margin-right: 30px;
+        opacity: 1;
+
+        @media (max-width: $screen-xs-min) {
+            margin-right: 15px;
+        }
+    }
+
+    &__button:active,
+    &__button:focus {
+        outline: 0 none;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 1.1), (-webkit-min-device-pixel-ratio: 1.09375), (min-resolution: 105dpi), (min-resolution: 1.1dppx) {
+    .pswp--svg {
+        .pswp__button,
+        .pswp__button--arrow--left:before,
+        .pswp__button--arrow--right:before {
+            background-image: url("../images/default-skin.svg");
+        }
+        
+        .pswp__button.pswp__button--close {
+            background-image: url("close-modal-dark.svg#datauri");
+        }
+    }
+}

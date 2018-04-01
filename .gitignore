@@ -8,6 +8,7 @@ coverage
 *.orig
 .idea
 sandbox
+scssReport.json
 /log/*
 /log
 /bower
@@ -19,6 +20,5 @@ source/bower_components
 source/f/css/_sprites.scss
 gulpfile-config.json
 .externalToolBuilders/*
-.tern-project
 .project
 .settings/*

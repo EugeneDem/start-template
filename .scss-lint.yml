@@ -5,6 +5,7 @@ scss_files:
 
 exclude:
   - "source/assets/scss/_normalize.scss"
+  - "source/assets/scss/_sprites.scss"
 
 plugin_directories: ['.scss-linters']
 
@@ -30,6 +31,7 @@ linters:
     convention: zero # or `none`
     exclude:
       - _normalize.scss
+      - _sprites.scss
 
   ChainedClasses:
     enabled: false
@@ -44,6 +46,7 @@ linters:
     enabled: true
     exclude:
       - _normalize.scss
+      - _sprites.scss
       - main.scss
     style: silent
 
@@ -64,7 +67,7 @@ linters:
     style: same_line # or 'new_line'
 
   EmptyLineBetweenBlocks:
-    enabled: false
+    enabled: true
     ignore_single_line_blocks: true
 
   EmptyRule:
@@ -103,13 +106,14 @@ linters:
     enabled: true
     allow_non_nested_indentation: false
     character: space # or 'tab'
-    width: 2
+    width: 4
 
   LeadingZero:
     enabled: true
     style: exclude_zero # or 'include_zero'
     exclude:
       - _normalize.scss
+      - _sprites.scss
 
   MergeableSelector:
     enabled: false
@@ -140,6 +144,7 @@ linters:
     separate_groups: false
     exclude:
       - _normalize.scss
+      - _sprites.scss
     order:
       - position
       - top
@@ -540,6 +545,7 @@ linters:
     excluded_identifiers: []
     exclude:
       - _normalize.scss
+      - _sprites.scss
 
   ZeroUnit:
     enabled: true

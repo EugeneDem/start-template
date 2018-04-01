@@ -1,0 +1,26 @@
+// Grid
+// --------------------------------------------------
+.grid {
+    margin-left:  ceil($grid-gutter-width / -2);
+    margin-right: floor($grid-gutter-width / -2);
+    @include clearfix;
+}
+
+@include make-grid-columns;
+
+@include make-grid('');
+
+// Laptop 1200
+@media #{$laptop} {
+    @include make-grid(l);
+}
+
+// Tablet 992
+@media #{$tablet} {
+    @include make-grid(t);
+}
+
+// Phone 768
+@media #{$phone} {
+    @include make-grid(p);
+}
